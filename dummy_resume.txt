@@ -1,0 +1,26 @@
+notepad dummy_resume.txt
+John Doe
+Email: john.doe@email.com | Phone: +91-9876543210
+Bangalore, Karnataka
+
+SKILLS
+Python, Django, Flask, FastAPI, SQL, PostgreSQL, Machine Learning, NLP, Git, Docker
+
+EXPERIENCE
+Junior Python Developer | ABC Tech Solutions, Bangalore | Jan 2023 - Present
+- Built REST APIs using FastAPI and Django REST Framework
+- Optimized PostgreSQL queries reducing response time by 40%
+- Deployed microservices on AWS using Docker containers
+
+Python Intern | XYZ Software, Mumbai | Jun 2022 - Dec 2022
+- Developed web scraping scripts using BeautifulSoup and Selenium
+- Created data pipelines processing 50k+ records daily
+
+EDUCATION
+B.Tech in Electronics and Communication | XYZ University | 2022 - 2026
+CGPA: 8.5/10
+
+PROJECTS
+Job Recommendation System | Personal Project
+- Built semantic search engine using sentence-transformers and FAISS
+- Achieved 85% relevance in job matching results
