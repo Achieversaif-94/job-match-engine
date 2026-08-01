@@ -7,7 +7,7 @@ from sentence_transformers import SentenceTransformer
 load_dotenv()
 DATABASE_URL = os.getenv("DATABASE_URL")
 
-model = SentenceTransformer('all-MiniLM-L6-v2')
+model = SentenceTransformer('paraphrase-MiniLM-L3-v2')
 
 conn = psycopg2.connect(DATABASE_URL)
 cur = conn.cursor()

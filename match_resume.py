@@ -9,7 +9,7 @@ from sentence_transformers import SentenceTransformer
 load_dotenv()
 DATABASE_URL = os.getenv("DATABASE_URL")
 
-model = SentenceTransformer('all-MiniLM-L6-v2')
+model = SentenceTransformer('paraphrase-MiniLM-L3-v2')
 index = faiss.read_index("jobs.index")
 
 with open("job_ids.txt") as f:

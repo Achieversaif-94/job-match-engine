@@ -36,7 +36,7 @@ st.caption("Upload your resume. Get matched jobs. AI feedback. All in seconds.")
 
 @st.cache_resource
 def load_model():
-    return SentenceTransformer('all-MiniLM-L6-v2')
+    return SentenceTransformer('paraphrase-MiniLM-L3-v2')
 
 @st.cache_resource
 def load_index():
