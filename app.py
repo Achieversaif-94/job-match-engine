@@ -1,7 +1,16 @@
 import streamlit as st
 import requests
+import fitz
+import numpy as np
+from sentence_transformers import SentenceTransformer
 
 API_URL = "https://job-match-api.onrender.com"
+
+@st.cache_resource
+def load_model():
+    return SentenceTransformer('paraphrase-MiniLM-L3-v2')
+
+model = load_model()
 
 st.set_page_config(page_title="Job Match Engine", page_icon="", layout="wide")
 
@@ -19,9 +28,16 @@ st.caption("Upload your resume. Get matched jobs. AI feedback. All in seconds.")
 uploaded_file = st.file_uploader("Upload your resume (PDF)", type="pdf")
 
 if uploaded_file:
-    with st.spinner("Analyzing resume and searching jobs..."):
-        files = {"file": uploaded_file.getvalue()}
-        response = requests.post(f"{API_URL}/search", files=files)
+    with st.spinner("Extracting text and generating embedding..."):
+        doc = fitz.open(stream=uploaded_file.read(), filetype="pdf")
+        resume_text = ""
+        for page in doc:
+            resume_text += page.get_text()
+        doc.close()
+        embedding = model.encode(resume_text).astype('float32').tolist()
+    
+    with st.spinner("Searching jobs..."):
+        response = requests.post(f"{API_URL}/search", json={"embedding": embedding})
         data = response.json()
     
     tab1, tab2 = st.tabs(["Job Matches", "Resume Feedback"])

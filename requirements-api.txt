@@ -1,8 +1,6 @@
 fastapi
 uvicorn
+faiss-cpu
 psycopg2-binary
 python-dotenv
-PyMuPDF
 numpy
-sentence-transformers
-faiss-cpu
