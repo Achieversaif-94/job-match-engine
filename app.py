@@ -1,6 +1,5 @@
 import streamlit as st
 import os
-import json
 import numpy as np
 import psycopg2
 import faiss
@@ -47,10 +46,10 @@ if uploaded_file:
         for page in doc:
             resume_text += page.get_text()
         doc.close()
-        
+
         resume_vec = model.encode(resume_text).astype('float32').reshape(1, -1)
         scores, indices = index.search(resume_vec, 5)
-        
+
         conn = psycopg2.connect(DATABASE_URL)
         cur = conn.cursor()
         results = []
@@ -68,9 +67,9 @@ if uploaded_file:
             })
         cur.close()
         conn.close()
-    
+
     tab1, tab2 = st.tabs(["Job Matches", "Resume Feedback"])
-    
+
     with tab1:
         for i, job in enumerate(results):
             col1, col2, col3 = st.columns([3, 1, 1])
@@ -86,15 +85,15 @@ if uploaded_file:
             with st.expander("Description"):
                 st.write(job['description'] + "...")
             st.divider()
-    
+
     with tab2:
         col1, col2, col3 = st.columns(3)
         with col1:
-            st.success("**Strongest**\n\nSolid ML project with real vector search implementation.")
+            st.success("**Strongest**\n\nSolid ML project with real vector search.")
         with col2:
             st.warning("**Gap**\n\nAdd internship or work experience.")
         with col3:
-            st.info("**Fix**\n\nQuantify project impact with metrics and live demo link.")
+            st.info("**Fix**\n\nQuantify project impact with live demo metrics.")
 
 else:
     st.info("Upload your resume PDF to get started.")
