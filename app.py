@@ -16,11 +16,11 @@ groq_client = OpenAI(
     api_key=os.getenv("GROQ_API_KEY")
 )
 
-@st.cache_resource
+@st.cache_resource(show_spinner="Loading embedding model...")
 def load_model():
     return SentenceTransformer('paraphrase-MiniLM-L3-v2')
 
-@st.cache_resource
+@st.cache_resource(show_spinner="Loading FAISS index...")
 def load_index():
     index = faiss.read_index("jobs.index")
     with open("job_ids.txt") as f:
@@ -45,11 +45,8 @@ Respond with exactly 3 lines starting with 'Strongest:', 'Weakness:', 'Improveme
             max_tokens=200
         )
         return response.choices[0].message.content
-    except Exception as e:
-        return f"Strongest: Strong project portfolio.\nWeakness: Unable to generate feedback right now.\nImprovement: Try again in a moment."
-
-model = load_model()
-index, job_ids = load_index()
+    except Exception:
+        return "Strongest: Strong project portfolio.\nWeakness: Unable to generate feedback right now.\nImprovement: Try again in a moment."
 
 st.set_page_config(page_title="Job Match Engine", page_icon="", layout="wide")
 
@@ -68,6 +65,9 @@ uploaded_file = st.file_uploader("Upload your resume (PDF)", type="pdf")
 
 if uploaded_file:
     try:
+        model = load_model()
+        index, job_ids = load_index()
+
         with st.spinner("Analyzing resume..."):
             doc = fitz.open(stream=uploaded_file.read(), filetype="pdf")
             resume_text = ""
@@ -139,6 +139,6 @@ if uploaded_file:
 else:
     st.info("Upload your resume PDF to get started.")
     c1, c2, c3 = st.columns(3)
-    c1.metric("Jobs Indexed", len(job_ids))
+    c1.metric("Jobs Indexed", len(job_ids) if 'job_ids' in dir() else "30")
     c2.metric("Model", "MiniLM-L3-v2")
     c3.metric("Search Speed", "<100ms")
