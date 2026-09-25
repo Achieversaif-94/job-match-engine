@@ -28,20 +28,19 @@ def load_index():
     return index, job_ids
 
 def get_resume_feedback(resume_text):
-    prompt = f"""You are a technical resume reviewer. Give EXACTLY 3 lines, nothing else:
+    prompt = f"""Give exactly 3 short lines about this resume, one sentence each:
 
-Strongest: <one sentence>
-Weakness: <one sentence>
-Improvement: <one sentence>
+Strongest: 
+Weakness: 
+Improvement: 
 
-Resume:
-{resume_text[:3000]}"""
+Resume: {resume_text[:2000]}"""
     try:
         response = groq_client.chat.completions.create(
             model="openai/gpt-oss-20b",
             messages=[{"role": "user", "content": prompt}],
             temperature=0.7,
-            max_tokens=250
+            max_tokens=400
         )
         return response.choices[0].message.content
     except Exception:
@@ -78,7 +77,7 @@ if uploaded_file:
                 st.error("Could not extract text from this PDF. Please upload a digital PDF, not a scanned image.")
                 st.stop()
 
-            resume_vec = model.encode(resume_text).astype('float32').reshape(1, -1)
+            resume_vec = model.encode(resume_text, normalize_embeddings=True).astype('float32').reshape(1, -1)
             scores, indices = index.search(resume_vec, 5)
 
             conn = psycopg2.connect(DATABASE_URL)
@@ -88,12 +87,11 @@ if uploaded_file:
                 job_id = job_ids[idx]
                 cur.execute("SELECT title, company, location, description, redirect_url FROM jobs WHERE id = %s", (job_id,))
                 title, company, location, desc, url = cur.fetchone()
-                display_score = max(0.0, min(float(score), 1.0))
                 results.append({
                     "title": title,
                     "company": company,
                     "location": location,
-                    "score": display_score,
+                    "score": float(score),
                     "description": desc[:300],
                     "url": url
                 })
@@ -116,7 +114,7 @@ if uploaded_file:
                 with col3:
                     if job['url']:
                         st.link_button("View Job", job['url'])
-                st.progress(job['score'])
+                st.progress(min(max(job['score'], 0.0), 1.0))
                 with st.expander("Description"):
                     st.write(job['description'] + "...")
                 st.divider()
