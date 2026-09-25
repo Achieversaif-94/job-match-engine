@@ -28,21 +28,20 @@ def load_index():
     return index, job_ids
 
 def get_resume_feedback(resume_text):
-    prompt = f"""You are a technical resume reviewer. Analyze this resume and give exactly 3 lines:
-- Line 1: Strongest part of this resume
-- Line 2: Biggest gap or weakness
-- Line 3: One specific improvement to land a Python/ML internship
+    prompt = f"""You are a technical resume reviewer. Give EXACTLY 3 lines, nothing else:
+
+Strongest: <one sentence>
+Weakness: <one sentence>
+Improvement: <one sentence>
 
 Resume:
-{resume_text[:3000]}
-
-Respond with exactly 3 lines starting with 'Strongest:', 'Weakness:', 'Improvement:'"""
+{resume_text[:3000]}"""
     try:
         response = groq_client.chat.completions.create(
             model="openai/gpt-oss-20b",
             messages=[{"role": "user", "content": prompt}],
             temperature=0.7,
-            max_tokens=200
+            max_tokens=250
         )
         return response.choices[0].message.content
     except Exception:
@@ -89,11 +88,12 @@ if uploaded_file:
                 job_id = job_ids[idx]
                 cur.execute("SELECT title, company, location, description, redirect_url FROM jobs WHERE id = %s", (job_id,))
                 title, company, location, desc, url = cur.fetchone()
+                display_score = max(0.0, min(float(score), 1.0))
                 results.append({
                     "title": title,
                     "company": company,
                     "location": location,
-                    "score": float(score),
+                    "score": display_score,
                     "description": desc[:300],
                     "url": url
                 })
@@ -116,20 +116,23 @@ if uploaded_file:
                 with col3:
                     if job['url']:
                         st.link_button("View Job", job['url'])
-                st.progress(min(job['score'] * 3, 1.0))
+                st.progress(job['score'])
                 with st.expander("Description"):
                     st.write(job['description'] + "...")
                 st.divider()
 
         with tab2:
             st.subheader("AI Resume Review")
-            lines = feedback.split('\n')
+            lines = [l.strip() for l in feedback.split('\n') if l.strip()]
             labels = ["Strongest", "Weakness", "Improvement"]
             icons = [st.success, st.warning, st.info]
             cols = st.columns(3)
-            for i, line in enumerate(lines[:3]):
-                text = line.split(':', 1)[1].strip() if ':' in line else line
+            for i in range(3):
                 with cols[i]:
+                    if i < len(lines):
+                        text = lines[i].split(':', 1)[1].strip() if ':' in lines[i] else lines[i]
+                    else:
+                        text = "Not available"
                     icons[i](f"**{labels[i]}**\n\n{text}")
 
     except Exception as e:
@@ -139,6 +142,6 @@ if uploaded_file:
 else:
     st.info("Upload your resume PDF to get started.")
     c1, c2, c3 = st.columns(3)
-    c1.metric("Jobs Indexed", len(job_ids) if 'job_ids' in dir() else "30")
+    c1.metric("Jobs Indexed", "30")
     c2.metric("Model", "MiniLM-L3-v2")
     c3.metric("Search Speed", "<100ms")
