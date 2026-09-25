@@ -37,14 +37,18 @@ Improvement:
 Resume: {resume_text[:2000]}"""
     try:
         response = groq_client.chat.completions.create(
-            model="openai/gpt-oss-20b",
+            model="openai/gpt-oss-120b",
             messages=[{"role": "user", "content": prompt}],
             temperature=0.7,
-            max_tokens=400
+            max_completion_tokens=1024,
+            reasoning_effort="low"
         )
-        return response.choices[0].message.content
-    except Exception:
-        return "Strongest: Strong project portfolio.\nWeakness: Unable to generate feedback right now.\nImprovement: Try again in a moment."
+        content = response.choices[0].message.content
+        if not content or not content.strip():
+            return "Strongest: Strong project portfolio.\nWeakness: Unable to generate feedback right now.\nImprovement: Try again in a moment."
+        return content
+    except Exception as e:
+        return f"Strongest: Strong project portfolio.\nWeakness: {str(e)[:80]}\nImprovement: Try again in a moment."
 
 st.set_page_config(page_title="Job Match Engine", page_icon="", layout="wide")
 
