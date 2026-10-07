@@ -22,6 +22,7 @@ for job_id, emb_json in rows:
     embeddings.append(json.loads(emb_json))
 
 embeddings = np.array(embeddings).astype('float32')
+faiss.normalize_L2(embeddings)
 
 dimension = 384
 index = faiss.IndexFlatIP(dimension)
@@ -36,4 +37,5 @@ with open("job_ids.txt", "w") as f:
 cur.close()
 conn.close()
 
-print(f"FAISS index built with {index.ntotal} vectors. Saved to jobs.index")
+print(f"FAISS index built with {index.ntotal} normalized vectors.")
+print(f"Sample norms (should be ~1.0): {[round(float(np.linalg.norm(v)), 3) for v in embeddings[:3]]}")

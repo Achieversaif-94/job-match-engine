@@ -18,7 +18,7 @@ groq_client = OpenAI(
 
 @st.cache_resource(show_spinner="Loading embedding model...")
 def load_model():
-    return SentenceTransformer('paraphrase-MiniLM-L3-v2')
+    return SentenceTransformer('all-MiniLM-L6-v2')
 
 @st.cache_resource(show_spinner="Loading FAISS index...")
 def load_index():
@@ -26,6 +26,24 @@ def load_index():
     with open("job_ids.txt") as f:
         job_ids = [line.strip() for line in f]
     return index, job_ids
+
+def chunk_text(text, chunk_size=400):
+    words = text.split()
+    chunks = []
+    for i in range(0, len(words), chunk_size):
+        chunks.append(" ".join(words[i:i+chunk_size]))
+    return chunks
+
+def embed_resume(model, resume_text):
+    chunks = chunk_text(resume_text)
+    if not chunks:
+        return None
+    chunk_embs = model.encode(chunks, normalize_embeddings=True)
+    mean_emb = np.mean(chunk_embs, axis=0)
+    norm = np.linalg.norm(mean_emb)
+    if norm > 0:
+        mean_emb = mean_emb / norm
+    return mean_emb.astype('float32').reshape(1, -1)
 
 def get_resume_feedback(resume_text):
     prompt = f"""Give exactly 3 short lines about this resume, one sentence each:
@@ -81,7 +99,11 @@ if uploaded_file:
                 st.error("Could not extract text from this PDF. Please upload a digital PDF, not a scanned image.")
                 st.stop()
 
-            resume_vec = model.encode(resume_text, normalize_embeddings=True).astype('float32').reshape(1, -1)
+            resume_vec = embed_resume(model, resume_text)
+            if resume_vec is None:
+                st.error("Could not generate embedding from resume text.")
+                st.stop()
+
             scores, indices = index.search(resume_vec, 5)
 
             conn = psycopg2.connect(DATABASE_URL)
@@ -114,7 +136,7 @@ if uploaded_file:
                     st.markdown(f"### {job['title']}")
                     st.caption(f"{job['company']} • {job['location']}")
                 with col2:
-                    st.metric("Score", f"{job['score']*100:.1f}%")
+                    st.metric("Similarity", f"{job['score']*100:.1f}%")
                 with col3:
                     if job['url']:
                         st.link_button("View Job", job['url'])
@@ -145,5 +167,5 @@ else:
     st.info("Upload your resume PDF to get started.")
     c1, c2, c3 = st.columns(3)
     c1.metric("Jobs Indexed", "30")
-    c2.metric("Model", "MiniLM-L3-v2")
+    c2.metric("Model", "MiniLM-L6")
     c3.metric("Search Speed", "<100ms")
