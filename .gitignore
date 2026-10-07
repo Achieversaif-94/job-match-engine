@@ -1,3 +1,4 @@
+test_resume.txt
 .env
-venv/
 __pycache__/
+*.pyc

@@ -1,0 +1,22 @@
+{
+  "backend_python_resume": {
+    "text": "Backend developer with 3 years experience. Built REST APIs using FastAPI and Django REST Framework. Strong in PostgreSQL, Redis, Docker, Kubernetes. Deployed microservices on AWS. Python, SQL, Git, CI/CD pipelines.",
+    "relevant_job_ids": ["5734585525", "1171506694", "2095081641", "5785772358"]
+  },
+  "ml_engineer_resume": {
+    "text": "Machine learning engineer with expertise in PyTorch, scikit-learn, NLP, and deep learning. Built recommendation systems and text classification models. Experience with FAISS, sentence-transformers, and HuggingFace transformers. Python, NumPy, pandas, SQL.",
+    "relevant_job_ids": ["5756755731", "4559411206", "4596884479", "1398819281"]
+  },
+  "data_scientist_resume": {
+    "text": "Data scientist with 4 years experience in analytics and people analytics. Strong in Python, SQL, statistical modeling, A/B testing, and dashboarding. Built predictive models for HR attrition using scikit-learn. Experience with Tableau and stakeholder communication.",
+    "relevant_job_ids": ["5790410794", "5821999876", "5822403303", "5785773115"]
+  },
+  "frontend_resume": {
+    "text": "Frontend developer with 2 years building React applications. Strong in JavaScript, TypeScript, HTML, CSS, Tailwind. Built responsive dashboards and component libraries. Experience with REST API integration, Git, and modern build tools.",
+    "relevant_job_ids": ["4514376094", "1171507676", "1546545031", "5543913571", "2452148589"]
+  },
+  "python_generalist_resume": {
+    "text": "Python developer with 1 year experience building web applications and automation scripts. Familiar with Flask, FastAPI, SQL, and REST APIs. Built small ML projects using scikit-learn. Comfortable with Git, Docker basics, and Linux.",
+    "relevant_job_ids": ["3592404535", "5740846893", "1171508030", "1593881823", "5530395854"]
+  }
+}
