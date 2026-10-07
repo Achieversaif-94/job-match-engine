@@ -10,12 +10,12 @@ Upload a PDF resume. The app extracts text, generates a sentence embedding using
 
 ## Architecture
 
-Resume PDF to PyMuPDF to text to chunks (400 words)
-all-MiniLM-L6-v2 to 384-dim embeddings
-mean-pool plus normalize
+Resume PDF -> PyMuPDF -> text -> chunks (400 words)
+all-MiniLM-L6-v2 -> 384-dim embeddings
+mean-pool + normalize
 FAISS cosine search against 30 job embeddings
-Top-5 matches plus PostgreSQL (Neon) JSON embeddings
-Groq gpt-oss-120b to 3-line feedback
+Top-5 matches + PostgreSQL (Neon) JSON embeddings
+Groq gpt-oss-120b -> 3-line feedback
 
 ## Tech stack
 
@@ -40,7 +40,7 @@ Groq gpt-oss-120b to 3-line feedback
 git clone https://github.com/Achieversaif-94/job-match-engine.git
 cd job-match-engine
 python -m venv venv
-venv Scripts activate
+venv\Scripts\activate
 pip install -r requirements.txt
 streamlit run app.py
 
