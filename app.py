@@ -104,6 +104,10 @@ if uploaded_file:
 
             scores, indices = index.search(resume_vec, 5)
 
+            top_score = float(scores[0][0])
+            if top_score < 0.30:
+                st.warning("No strong matches found. Your resume doesn't closely match any indexed jobs. Try a different resume or wait for more jobs to be indexed.")
+
             conn = psycopg2.connect(DATABASE_URL)
             cur = conn.cursor()
             results = []
