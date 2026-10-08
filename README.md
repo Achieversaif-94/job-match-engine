@@ -12,12 +12,12 @@ Upload a PDF resume. The app extracts text, generates a sentence embedding using
 
 Tested on 5 hand-labeled resume/job pairs against the 30-job index:
 
-- Recall@5: 100%
-- Recall@3: 100%
-- Recall@1: 40%
-- MRR: 0.667
+* Recall@5: 100%
+* Recall@3: 100%
+* Recall@1: 40%
+* MRR: 0.667
 
-Caveat: the index is small (30 jobs, 4-5 relevant per case), so recall@5 is easy to max out. MRR is the more informative signal - the first relevant match appears at rank 1.5 on average.
+Caveat: the index is small (30 jobs, 4-5 relevant per case), so recall@5 is easy to max out. MRR is the more informative signal - the first relevant match appears at rank 1.8 on average.
 
 ## Architecture
 
@@ -30,21 +30,21 @@ Groq gpt-oss-120b -> 3-line feedback
 
 ## Tech stack
 
-- Python, Streamlit for UI
-- sentence-transformers (all-MiniLM-L6-v2), FAISS (IndexFlatIP on normalized vectors)
-- PostgreSQL via Neon for job storage
-- PyMuPDF for PDF parsing
-- Adzuna API for job data
-- Groq API (openai/gpt-oss-120b) for feedback
+* Python, Streamlit for UI
+* sentence-transformers (all-MiniLM-L6-v2), FAISS (IndexFlatIP on normalized vectors)
+* PostgreSQL via Neon for job storage
+* PyMuPDF for PDF parsing
+* Adzuna API for job data
+* Groq API (openai/gpt-oss-120b) for feedback
 
 ## Limitations
 
-- 30 jobs indexed, not 10,000. The pipeline scales, but the demo dataset is small.
-- Adzuna free tier truncates descriptions to about 500 chars. Full-text matching would need a paid tier.
-- One embedding model, no baseline. No BM25 comparison, no reranker.
-- No OCR. Scanned PDFs (image-only) return empty text.
-- No no-good-match threshold. Always returns 5 results even if the resume is irrelevant.
-- Similarity score is not a qualification score. It measures text similarity, not experience fit.
+* 30 jobs indexed, not 10,000. The pipeline scales, but the demo dataset is small.
+* Adzuna free tier truncates descriptions to about 500 chars. Full-text matching would need a paid tier.
+* One embedding model, no baseline. No BM25 comparison, no reranker.
+* No OCR. Scanned PDFs (image-only) return empty text.
+* No no-good-match threshold. Always returns 5 results even if the resume is irrelevant.
+* Similarity score is not a qualification score. It measures text similarity, not experience fit.
 
 ## Run locally
 
@@ -57,15 +57,15 @@ streamlit run app.py
 
 Create a .env file with:
 
-ADZUNA_APP_ID=your_key
-ADZUNA_APP_KEY=your_key
-DATABASE_URL=your_neon_url
-GROQ_API_KEY=your_groq_key
+ADZUNA\_APP\_ID=your\_key
+ADZUNA\_APP\_KEY=your\_key
+DATABASE\_URL=your\_neon\_url
+GROQ\_API\_KEY=your\_groq\_key
 
 To rebuild the index and evaluate:
 
-python generate_embeddings.py
-python build_faiss_index.py
+python generate\_embeddings.py
+python build\_faiss\_index.py
 python evaluate.py
 
 ## Author
@@ -73,3 +73,4 @@ python evaluate.py
 Mohammed Saif Hussain
 B.Tech ECE + AI/ML, KL University
 https://github.com/Achieversaif-94
+

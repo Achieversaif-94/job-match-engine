@@ -13,7 +13,7 @@ index = faiss.read_index("jobs.index")
 with open("job_ids.txt") as f:
     job_ids = [line.strip() for line in f]
 
-def chunk_text(text, chunk_size=400):
+def chunk_text(text, chunk_size=150):
     words = text.split()
     return [" ".join(words[i:i+chunk_size]) for i in range(0, len(words), chunk_size)]
 
@@ -27,7 +27,7 @@ def embed_resume(text):
 with open("test_cases.json") as f:
     TEST_CASES = json.load(f)
 
-results = {"recall@1": 0, "recall@3": 0, "recall@5": 0, "mrr_sum": 0.0}
+results = {"recall@1": 0, "recall@3": 0, "recall@5": 0, "mrr_sum": 0.0, "rank_sum": 0.0, "hits": 0}
 n = len(TEST_CASES)
 
 for case_name, case in TEST_CASES.items():
@@ -38,7 +38,6 @@ for case_name, case in TEST_CASES.items():
     retrieved = [job_ids[i] for i in indices[0]]
     relevant = set(case["relevant_job_ids"])
 
-    hit_at = None
     if relevant & set(retrieved[:1]):
         results["recall@1"] += 1
     if relevant & set(retrieved[:3]):
@@ -49,10 +48,11 @@ for case_name, case in TEST_CASES.items():
     for rank, rid in enumerate(retrieved, 1):
         if rid in relevant:
             results["mrr_sum"] += 1 / rank
-            hit_at = rank
+            results["rank_sum"] += rank
+            results["hits"] += 1
             break
 
-    print(f"{case_name}: top-5 = {retrieved}, relevant={sorted(relevant)}, first_hit_rank={hit_at}")
+    print(f"{case_name}: top-5 = {retrieved}")
 
 print()
 print(f"Evaluated {n} test cases")
@@ -60,3 +60,5 @@ print(f"Recall@1: {results['recall@1']/n:.2%}")
 print(f"Recall@3: {results['recall@3']/n:.2%}")
 print(f"Recall@5: {results['recall@5']/n:.2%}")
 print(f"MRR:      {results['mrr_sum']/n:.3f}")
+if results["hits"] > 0:
+    print(f"Mean rank of first relevant match: {results['rank_sum']/results['hits']:.2f}")

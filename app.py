@@ -27,12 +27,9 @@ def load_index():
         job_ids = [line.strip() for line in f]
     return index, job_ids
 
-def chunk_text(text, chunk_size=400):
+def chunk_text(text, chunk_size=150):
     words = text.split()
-    chunks = []
-    for i in range(0, len(words), chunk_size):
-        chunks.append(" ".join(words[i:i+chunk_size]))
-    return chunks
+    return [" ".join(words[i:i+chunk_size]) for i in range(0, len(words), chunk_size)]
 
 def embed_resume(model, resume_text):
     chunks = chunk_text(resume_text)
@@ -82,6 +79,7 @@ st.title("Semantic Job Match Engine")
 st.caption("Upload your resume. Get matched jobs. AI feedback.")
 
 uploaded_file = st.file_uploader("Upload your resume (PDF)", type="pdf")
+st.caption("Resumes are processed in-memory and sent to Groq's API for feedback. Not stored on our servers.")
 
 if uploaded_file:
     try:
